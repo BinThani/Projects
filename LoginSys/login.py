@@ -1,5 +1,4 @@
 import tkinter as tk
-import time
 """
 Main login system.
 #355C7D
@@ -24,6 +23,11 @@ Work on registerUser.
 # Globals
 
 # Backend.
+def user_already_registered():
+    already = tk.Toplevel()
+    already.geometry('200x200')
+    already.resizable(False, False)
+
 def loginstatebutton():
     login.config(state='normal')
     register.config(state='normal')
@@ -34,7 +38,7 @@ def Invalid_window():
     window.config(bg='#355C7D')
 
     # GUI's
-    label = tk.Label(window, text="Invalid Credentials.", bg='#ADD8E6', fg="red")
+    label = tk.Label(window, text="Invalid Credentials/User already registered.", bg='#ADD8E6', fg="red")
     button = tk.Button(window, text='OK', height=1, width=10, bg='#ADD8E6', font=40, command=lambda: [window.destroy(), loginstatebutton()])
     button.place(relx=0.6, rely=0.5)
     label.place(relx=0.2, rely=0.2)
@@ -49,15 +53,40 @@ def Login():
     # Checks if it's Empty.
     if not entryUser or not entryPass:
         return Invalid_window()
-    with open(r'C:\Users#path', 'r') as users:
-        with open(r'C:\Users#path', 'r') as pswr:
+    with open(r'file.txt', 'r') as users:
+        with open(r'file.txt', 'r') as pswr:
             for line1 in users:
                 for line2 in pswr:
                     print("Line1: ", line1.strip())
                     print("Line2: ", line2)
-                    if entryUser == line1.strip():
-                        return after_registered()
+                    if entryUser == line1.strip() and entryPass == line2.strip():
+                        return after_loggedin()
+                    else:
+                        print("Not found.")
     return Invalid_window()
+
+def after_loggedin_state():
+    login.config(state="normal")
+    register.config(state="normal")
+
+def after_loggedin():
+    """
+    Need to fix after_button.
+    after clicking ok return
+    the buttons to normal state.
+    """
+    after = tk.Toplevel(root)
+    after.resizable(False, False)
+    after.config(bg="#355C7D")
+    after.geometry("300x175")
+
+    success = tk.Label(after, text="Successfully Logged In!", fg="#00ff00", font=20, bg="#355C7D")
+    after_button = tk.Button(after, text="OK", fg="#00ff00", font=20, bg="#355C7D", width=10, command=lambda: [after_loggedin_state(), after.destroy()])
+    success.place(relx=0.20, rely=0.40)
+    after_button.place(relx=0.60, rely=0.70)
+
+
+
 
 def after_registered():
     """
@@ -73,23 +102,20 @@ def after_registered():
     success = tk.Label(after, text="Successfully Registered", fg="#00ff00", font=20, bg="#355C7D")
     success.place(relx=0.20, rely=0.40)
 
-
 def registeruser(register_user, register_password):
     """
-    Bugs:
-    Doesn't check if user is registered for example:
-    sango is in users
-    but a person using this program can use sango and then
-    we would have 2 sangos in the users.txt.
+    Bugs(0): Fixed/Had problems where user's with same name can register.
     """
     username_registering = register_user.get() + "\n"
     password_registering = register_password.get() + "\n"
-    print(username_registering)
-    print(password_registering)
-    with open(r'C:\Users#path', 'a') as users:
-        with open(r'C:\Users#path', 'a') as pswr:
-            users.write(username_registering)
-            pswr.write(password_registering)
+    with open(r'file.txt', 'r') as userCheck:
+        for line in userCheck:
+            if line == username_registering:
+                return Invalid_window()
+        with open(r'file.txt', 'a') as users:
+            with open(r'file.txt', 'a') as pswr:
+                users.write(username_registering)
+                pswr.write(password_registering)
 
 def registerstate():
     register.config(state='disabled')
@@ -108,8 +134,8 @@ def registerempty(register_users, register_passs):
     reg_user = register_users.get()
     reg_pass = register_passs.get()
     if not reg_user or not reg_pass:
-        with open(r'C:\Users#path', 'w') as users:
-            with open(r'C:\Users#path', 'w') as pswr:
+        with open(r'file.txt', 'w') as users:
+            with open(r'file.txt', 'w') as pswr:
                 return Invalid_window()
 
 
